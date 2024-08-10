@@ -1,11 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    
+    <div class="container">
+        <button id="createButton">Create Task</button>
+        <button id="resetButton" class="reset">Reset</button>
+        <div id="dataList"></div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Edit Tasks</h2>
+            <ul id="taskList"></ul>
+            <button id="addTemplateButton">Add Template</button>
+        </div>
+    </div>
+
+    <div id="resetModal" class="modal">
+        <div class="modal-content">
+            <span class="close-reset-button">&times;</span>
+            <h2>Reset Options</h2>
+            <button id="resetAllFalseButton">Reset All to Incomplete</button>
+            <button id="clearTasksButton">Clear All Tasks</button>
+        </div>
+    </div>
+
+    <canvas id="confettiCanvas"></canvas>
+
+    <footer>
+        Made by Marvel Collin with ❤️
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
