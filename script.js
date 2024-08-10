@@ -5,12 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetModal = document.getElementById('resetModal');
     const closeButton = document.querySelector('.close-button');
     const closeResetButton = document.querySelector('.close-reset-button');
-    const dataForm = document.getElementById('dataForm');
     const dataList = document.getElementById('dataList');
+    const taskList = document.getElementById('taskList');
     const resetAllFalseButton = document.getElementById('resetAllFalseButton');
     const clearTasksButton = document.getElementById('clearTasksButton');
+    const addTemplateButton = document.getElementById('addTemplateButton');
+    const newTaskButton = document.getElementById('newTaskButton');
     const confettiCanvas = document.getElementById('confettiCanvas');
     const ctx = confettiCanvas.getContext('2d');
+
+    const TEN_HOURS_IN_MS = 10 * 60 * 60 * 1000;
 
     confettiCanvas.width = window.innerWidth;
     confettiCanvas.height = window.innerHeight;
@@ -86,6 +90,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    const showModal = () => {
+        const storedData = JSON.parse(sessionStorage.getItem('data')) || [];
+        taskList.innerHTML = storedData.map((item, index) => `
+            <li class="task-item">
+                <input type="text" value="${item.title}" data-index="${index}">
+                <span class="trash-icon" data-index="${index}">🗑️</span>
+            </li>
+        `).join('');
+
+        document.querySelectorAll('.task-item input').forEach(input => {
+            input.addEventListener('blur', (event) => {
+                const index = event.target.getAttribute('data-index');
+                updateTaskTitle(index, event.target.value);
+            });
+        });
+
+        document.querySelectorAll('.trash-icon').forEach(icon => {
+            icon.addEventListener('click', (event) => {
+                const index = event.target.getAttribute('data-index');
+                deleteTask(index);
+            });
+        });
+
+        modal.style.display = 'block';
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            document.querySelector('#modal .modal-content').classList.add('show');
+        }, 0);
+    };
+
     const toggleDoneStatus = (index, isChecked) => {
         const storedData = JSON.parse(sessionStorage.getItem('data')) || [];
         storedData[index].done = isChecked.toString();
@@ -98,13 +132,66 @@ document.addEventListener('DOMContentLoaded', () => {
         return storedData.every(item => item.done === 'true');
     };
 
-    createButton.addEventListener('click', () => {
-        modal.style.display = 'block';
+    const updateTaskTitle = (index, title) => {
+        const storedData = JSON.parse(sessionStorage.getItem('data')) || [];
+        storedData[index].title = title;
+        sessionStorage.setItem('data', JSON.stringify(storedData));
+        loadData();
+    };
+
+    const deleteTask = (index) => {
+        let storedData = JSON.parse(sessionStorage.getItem('data')) || [];
+        storedData.splice(index, 1);
+        sessionStorage.setItem('data', JSON.stringify(storedData));
+        loadData();
+        showModal();
+    };
+
+    const closeModal = (modalElement) => {
+        modalElement.style.opacity = '0';
+        modalElement.querySelector('.modal-content').classList.remove('show');
         setTimeout(() => {
-            modal.style.opacity = '1';
-            document.querySelector('#modal .modal-content').classList.add('show');
-        }, 0);
-    });
+            modalElement.style.display = 'none';
+        }, 300);
+    };
+
+    const addTemplateTasks = () => {
+        const templateTasks = [
+            { title: 'Hapus Papan Tulis', done: 'false' },
+            { title: 'Siapin Web Binus', done: 'false' },
+            { title: 'Siapin CO', done: 'false' },
+            { title: 'Perkenalan', done: 'false' },
+            { title: 'Semangat', done: 'false' },
+        ];
+        const storedData = JSON.parse(sessionStorage.getItem('data')) || [];
+        const newData = storedData.concat(templateTasks);
+        sessionStorage.setItem('data', JSON.stringify(newData));
+        loadData();
+        showModal();
+    };
+
+    const addNewTask = () => {
+        const storedData = JSON.parse(sessionStorage.getItem('data')) || [];
+        storedData.push({ title: '', done: 'false' });
+        sessionStorage.setItem('data', JSON.stringify(storedData));
+        loadData();
+        showModal();
+    };
+
+    const setSessionExpiration = () => {
+        const expirationTime = new Date().getTime() + TEN_HOURS_IN_MS;
+        sessionStorage.setItem('expiration', expirationTime);
+    };
+
+    const checkSessionExpiration = () => {
+        const expirationTime = sessionStorage.getItem('expiration');
+        if (expirationTime && new Date().getTime() > expirationTime) {
+            sessionStorage.removeItem('data');
+            sessionStorage.removeItem('expiration');
+        }
+    };
+
+    createButton.addEventListener('click', showModal);
 
     resetButton.addEventListener('click', () => {
         resetModal.style.display = 'block';
@@ -131,27 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const closeModal = (modalElement) => {
-        modalElement.style.opacity = '0';
-        modalElement.querySelector('.modal-content').classList.remove('show');
-        setTimeout(() => {
-            modalElement.style.display = 'none';
-        }, 300);
-    };
-
-    dataForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const title = document.getElementById('title').value;
-
-        const storedData = JSON.parse(sessionStorage.getItem('data')) || [];
-        storedData.push({ title, done: 'false' });
-        sessionStorage.setItem('data', JSON.stringify(storedData));
-
-        loadData();
-        closeModal(modal);
-        dataForm.reset();
-    });
-
     resetAllFalseButton.addEventListener('click', () => {
         const storedData = JSON.parse(sessionStorage.getItem('data')) || [];
         const resetData = storedData.map(item => ({ ...item, done: 'false' }));
@@ -162,9 +228,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clearTasksButton.addEventListener('click', () => {
         sessionStorage.removeItem('data');
+        sessionStorage.removeItem('expiration');
         loadData();
         closeModal(resetModal);
     });
 
+    addTemplateButton.addEventListener('click', addTemplateTasks);
+    newTaskButton.addEventListener('click', addNewTask);
+
+    checkSessionExpiration();
+    setSessionExpiration();
     loadData();
 });
