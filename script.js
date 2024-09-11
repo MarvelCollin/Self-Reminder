@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const confettiCanvas = document.getElementById('confettiCanvas');
     const ctx = confettiCanvas.getContext('2d');
 
-    const TEN_HOURS_IN_MS = 10 * 60 * 60 * 1000;
+    const EXPIRED_TIME = 1.4 * 60 * 60 * 1000;
 
     confettiCanvas.width = window.innerWidth;
     confettiCanvas.height = window.innerHeight;
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const setSessionExpiration = () => {
-        const expirationTime = new Date().getTime() + TEN_HOURS_IN_MS;
+        const expirationTime = new Date().getTime() + EXPIRED_TIME;
         sessionStorage.setItem('expiration', expirationTime);
     };
 
