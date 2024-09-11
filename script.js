@@ -157,11 +157,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const addTemplateTasks = () => {
         const templateTasks = [
-            { title: 'Hapus Papan Tulis', done: 'false' },
-            { title: 'Siapin Web Binus', done: 'false' },
-            { title: 'Siapin CO', done: 'false' },
-            { title: 'Perkenalan', done: 'false' },
-            { title: 'Semangat', done: 'false' },
+            { title: 'Ruman LAB.SLC', done: 'false' },
+            { title: 'Messier', done: 'false' },
+            { title: 'Scan Barcode PC', done: 'false' },
+            { title: 'Zoom', done: 'false' },
+            { title: 'Course-Outline', done: 'false' },
+            { title: 'Absen Kehadiran Binusmaya', done: 'false' },
+            { title: 'Session Log', done: 'false' },
+            { title: 'Centang Course Outline Messier', done: 'false' },
+            { title: 'Verifikasi Mahasiswa', done: 'false' },
+            { title: 'Ruman Clear D, Restart', done: 'false' },
+            { title: 'Hapus file pc tutor', done: 'false' },
+            { title: 'Crosscheck barang', done: 'false' },
         ];
         const storedData = JSON.parse(sessionStorage.getItem('data')) || [];
         const newData = storedData.concat(templateTasks);
